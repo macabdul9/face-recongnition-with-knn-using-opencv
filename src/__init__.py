@@ -1,10 +1,8 @@
 import face_detection as fd
 import numpy as np
 import cv2
-import pickle
-import os
-import matplotlib.pyplot as plt
 
+import os
 
 
 def train():
@@ -92,6 +90,11 @@ def face_recognition():
             break;
 
         face_section = fd.detect(frame)
+        # print(type(face_section))
+
+        if len(face_section) == 0:
+            cv2.imshow("Video Frame", frame)
+            continue
         test = cv2.resize(face_section, (100, 100))
         test = np.array(test)
         test = test.flatten()
@@ -100,7 +103,7 @@ def face_recognition():
 
         # see the prediction on console
         result = knn(X, Y, test, names)
-        print(result)
+        # print(result)
 
         # Write the prediction label on the fram
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -137,5 +140,6 @@ if __name__ == "__main__":
         face_recognition()
     else:
         print("\n-----Thank you --------\n")
+
 
 

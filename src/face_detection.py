@@ -5,14 +5,16 @@ import numpy as np
 # function to detect the face, eye and smile
 def detect(frame):
     # cascade classifiers
-    face_cascade = cv2.CascadeClassifier("../dataset/haarcascades/haarcascade_frontalface_alt.xml")
-    eye_cascade = cv2.CascadeClassifier("../dataset/haarcascades/haarcascade_eye_tree_eyeglasses.xml")
-    smile_cascade = cv2.CascadeClassifier("../dataset/haarcascades/haarcascade_smile.xml")
+    face_cascade = cv2.CascadeClassifier("./dataset/haarcascades/haarcascade_frontalface_alt.xml")
+    eye_cascade = cv2.CascadeClassifier("./dataset/haarcascades/haarcascade_eye_tree_eyeglasses.xml")
+    smile_cascade = cv2.CascadeClassifier("./dataset/haarcascades/haarcascade_smile.xml")
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     gray = cv2.equalizeHist(gray)
 
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+    if len(faces) == 0:
+        return []
 
     face_section = frame
 
@@ -38,7 +40,7 @@ def detect(frame):
             eye_center = (x2 + w2//2, y2 + h2//2)
             cv2.ellipse(roi_color, eye_center, (w2 // 2 + 10, h2 // 2 - 5), 0, 0, 360, (255, 0, 0), 2)
 
-        # detection the lip and smile some says so
+        # detect the lip and smile at least some says so
         smiles = smile_cascade.detectMultiScale(roi_gray, 1.8, 20)
         for (sx, sy, sw, sh) in smiles:
             cv2.rectangle(roi_color, (sx, sy), ((sx + sw), (sy + sh)), (0, 255, 0), 2)
@@ -69,9 +71,12 @@ def training_data_collection():
             break
 
         face_section = detect(frame)
+        if len(face_section) == 0:
+            cv2.imshow("Video Frame", frame)
+            continue
 
         # print(face_section.shape)
-        face_section = cv2.resize(face_section, (100, 100))
+        face_section = cv2.resize(face_section,(100,100))
         # print(type(face_section))
         # print(face_section.shape)
 
